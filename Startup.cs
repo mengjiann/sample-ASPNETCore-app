@@ -123,6 +123,7 @@ namespace Examples.AspNetCore
                 .SetResourceBuilder(ResourceBuilder.CreateDefault().AddService(Configuration.GetValue<string>("Otlp:ServiceName")))
                 .AddAspNetCoreInstrumentation()
                 .AddHttpClientInstrumentation()
+                .AddConsoleExporter()
                 .AddOtlpExporter(otlpOptions =>
                 {
                     otlpOptions.Endpoint = new Uri(this.Configuration.GetValue<string>("OtlpEndpoint"));
