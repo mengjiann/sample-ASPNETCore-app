@@ -93,7 +93,7 @@ namespace Examples.AspNetCore
                         .AddHttpClientInstrumentation()
                         .AddOtlpExporter(otlpOptions =>
                         {
-                            otlpOptions.Endpoint = new Uri(this.Configuration.GetValue<string>("Otlp:Endpoint"));
+                            otlpOptions.Endpoint = new Uri(this.Configuration.GetValue<string>("OtlpEndpoint"));
                         }));
                     break;
                 default:
@@ -119,7 +119,14 @@ namespace Examples.AspNetCore
 
             // TODO: Add IServiceCollection.AddOpenTelemetryMetrics extension method
             var providerBuilder = Sdk.CreateMeterProviderBuilder()
-                .AddAspNetCoreInstrumentation();
+                .AddMeter("System.Runtime")
+                .SetResourceBuilder(ResourceBuilder.CreateDefault().AddService(Configuration.GetValue<string>("Otlp:ServiceName")))
+                .AddAspNetCoreInstrumentation()
+                .AddHttpClientInstrumentation()
+                .AddOtlpExporter(otlpOptions =>
+                {
+                    otlpOptions.Endpoint = new Uri(this.Configuration.GetValue<string>("OtlpEndpoint"));
+                });
 
             // TODO: Add configuration switch for Prometheus and OTLP export
             providerBuilder
