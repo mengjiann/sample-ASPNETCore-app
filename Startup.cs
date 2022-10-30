@@ -119,7 +119,7 @@ namespace Examples.AspNetCore
 
             // TODO: Add IServiceCollection.AddOpenTelemetryMetrics extension method
             var providerBuilder = Sdk.CreateMeterProviderBuilder()
-                .AddMeter("System.Runtime")
+                .AddRuntimeInstrumentation()
                 .SetResourceBuilder(ResourceBuilder.CreateDefault().AddService(Configuration.GetValue<string>("Otlp:ServiceName")))
                 .AddAspNetCoreInstrumentation()
                 .AddHttpClientInstrumentation()
