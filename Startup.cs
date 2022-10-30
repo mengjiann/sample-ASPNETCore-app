@@ -14,14 +14,7 @@
 // limitations under the License.
 // </copyright>
 
-using System;
-using System.IO;
 using System.Reflection;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using OpenTelemetry;
 using OpenTelemetry.Exporter;
@@ -87,9 +80,13 @@ namespace Examples.AspNetCore
                     // See: https://docs.microsoft.com/aspnet/core/grpc/troubleshoot#call-insecure-grpc-services-with-net-core-client
                     AppContext.SetSwitch("System.Net.Http.SocketsHttpHandler.Http2UnencryptedSupport", true);
 
-                    services.AddOpenTelemetryTracing((builder) => builder
-                        .SetResourceBuilder(ResourceBuilder.CreateDefault().AddService(this.Configuration.GetValue<string>("Otlp:ServiceName")))
-                        .AddAspNetCoreInstrumentation()
+                    services.AddOpenTelemetryTracing(builder => builder
+                        .SetResourceBuilder(ResourceBuilder.CreateDefault().AddService(Configuration.GetValue<string>("Otlp:ServiceName")))
+                        .AddAspNetCoreInstrumentation(opt =>
+                        {
+                            opt.RecordException = true;
+                        })
+                        .SetErrorStatusOnException(true)
                         .AddHttpClientInstrumentation()
                         .AddOtlpExporter(otlpOptions =>
                         {
